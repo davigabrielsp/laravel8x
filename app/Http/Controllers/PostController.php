@@ -11,7 +11,7 @@ class PostController extends Controller
 {
     public function index()
     {
-       $posts = Post::all();
+       $posts = Post::orderBy('id', 'ASC')->paginate(1);
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -35,6 +35,15 @@ class PostController extends Controller
 
         return view('admin.posts.show', compact('posts'));
     }
+    public function edit($id)
+    {
+
+        if(!$post = Post::find($id)){
+            return redirect()->route('posts.index');
+        }
+
+        return view('admin.posts.edit', compact('post'));
+    }
 
     public function destroy($id)
     {
@@ -45,5 +54,25 @@ class PostController extends Controller
         $post->delete();
             return redirect()->route('posts.index')
             ->with('message', 'DELETADO COM SUCESSO');
+    }
+    public function update(StoreUpdatePost $request,$id)
+    {
+        if(!$post = Post::find($id)){
+            return redirect()->route('posts.index');
+        }
+
+        $post->update($request->all());
+
+        return redirect()->route('posts.index')->with('message', 'post atualizado com sucesso');
+    }
+
+    public function search(Request $request)
+    {
+        $filters = $request->except('_token');
+       $posts = Post::where('title', '=', $request->search)
+       ->orWhere('content', 'LIKE', "%{$request->search}%")
+       ->paginate(1);
+
+       return view('admin.posts.index', compact('posts', 'filters'));
     }
 }

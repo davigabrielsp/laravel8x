@@ -25,7 +25,17 @@ class StoreUpdatePost extends FormRequest
     {
         return [
             'title' => 'required|min:3|max:160',
-            'content' => 'required|min:5|max:200',
+            'content' => 'nullable|min:5|max:200',
+            'image' => 'required|image'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Campo de título é requiredo',
+            'content.required' => 'Quantidade mínima de caracteres é 5',
+            'image' => 'Inclua uma imagem'
         ];
     }
 }
